@@ -14,46 +14,18 @@
  * limitations under the License.
  */
 
-#define LOG_TAG "libtrusty"
+#ifndef _LIB_TIPC_H
+#define _LIB_TIPC_H
 
-#include <errno.h>
-#include <fcntl.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#include <cutils/log.h>
+int tipc_connect(const char *dev_name, const char *srv_name);
+int tipc_close(int fd);
 
-#include "tipc_ioctl.h"
-
-int tipc_connect(const char *dev_name, const char *srv_name)
-{
-	int fd;
-	int rc;
-
-	fd = open(dev_name, O_RDWR);
-	if (fd < 0) {
-		rc = -errno;
-		ALOGE("%s: cannot open tipc device \"%s\": %s\n",
-		      __func__, dev_name, strerror(errno));
-		return rc < 0 ? rc : -1;
-	}
-
-	rc = ioctl(fd, TIPC_IOC_CONNECT, srv_name);
-	if (rc < 0) {
-		rc = -errno;
-		ALOGE("%s: can't connect to tipc service \"%s\" (err=%d)\n",
-		      __func__, srv_name, errno);
-		close(fd);
-		return rc < 0 ? rc : -1;
-	}
-
-	ALOGV("%s: connected to \"%s\" fd %d\n", __func__, srv_name, fd);
-	return fd;
+#ifdef __cplusplus
 }
+#endif
 
-void tipc_close(int fd)
-{
-	close(fd);
-}
+#endif
